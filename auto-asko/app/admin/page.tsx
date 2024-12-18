@@ -1,22 +1,10 @@
 "use client";
 import { useState } from "react";
+import { cars as carlist } from "../cars/data";
 
 export default function AdminPage() {
   // Stan z listą samochodów
-  const [cars, setCars] = useState([
-    {
-      id: 1,
-      name: "Toyota Corolla",
-      description: "Ekonomiczny",
-      price: "45,000 PLN",
-    },
-    {
-      id: 2,
-      name: "BMW 3 Series",
-      description: "Luksusowy sedan",
-      price: "120,000 PLN",
-    },
-  ]);
+  const [cars, setCars] = useState(carlist);
 
   // Stan dla nowego samochodu
   const [newCar, setNewCar] = useState({
@@ -31,6 +19,7 @@ export default function AdminPage() {
       const newCarData = {
         id: cars.length + 1,
         ...newCar,
+        image: "https://via.placeholder.com/300x200",
       };
       setCars([...cars, newCarData]);
       setNewCar({ name: "", description: "", price: "" }); // Czyszczenie formularza
