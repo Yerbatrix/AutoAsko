@@ -18,7 +18,7 @@ export default function CarsPage() {
         const data = await res.json();
         setCars(data);
       } catch (err) {
-        setError(err.message || "Wystąpił błąd");
+        setError((err as Error).message || "Wystąpił błąd");
       } finally {
         setLoading(false);
       }

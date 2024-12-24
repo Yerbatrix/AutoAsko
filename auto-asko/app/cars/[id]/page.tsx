@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
 
 export default async function CarDetailsPage({ params }: { params: { id: string } }) {
-  // Pobieranie danych samochodu z API
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cars/${params.id}`);
-  const car = await res.json();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-  if (!car || res.status !== 200) {
-    notFound(); // Pokazuje stronę 404 jeśli samochód nie istnieje
+  // Pobieranie danych samochodu z API
+  const res = await fetch(`${apiUrl}/api/cars/${params.id}`);
+  if (!res.ok) {
+    notFound(); // Automatycznie pokazuje stronę 404
   }
+
+  const car = await res.json();
 
   return (
     <section>
@@ -24,5 +26,4 @@ export default async function CarDetailsPage({ params }: { params: { id: string 
       </a>
     </section>
   );
-}
 }

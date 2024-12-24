@@ -37,9 +37,13 @@ export default function AdminPage() {
   };
 
   const deleteCar = async (id: number) => {
+    console.log(`Wysyłam żądanie DELETE do /api/cars/${id}`);
     const res = await fetch(`/api/cars/${id}`, { method: "DELETE" });
+  
     if (res.ok) {
-      setCars(cars.filter((car) => car.id !== id));
+      setCars(cars.filter((car) => car.id !== id)); // Usuń samochód lokalnie
+    } else {
+      console.error("Nie udało się usunąć samochodu");
     }
   };
 
@@ -56,7 +60,7 @@ export default function AdminPage() {
             placeholder="Nazwa samochodu"
             value={newCar.name}
             onChange={(e) => setNewCar({ ...newCar, name: e.target.value })}
-            className="border rounded p-2"
+            className="border rounded p-2 text-black"
           />
           <input
             type="text"
@@ -65,14 +69,14 @@ export default function AdminPage() {
             onChange={(e) =>
               setNewCar({ ...newCar, description: e.target.value })
             }
-            className="border rounded p-2"
+            className="border rounded p-2 text-black"
           />
           <input
             type="text"
             placeholder="Cena samochodu"
             value={newCar.price}
             onChange={(e) => setNewCar({ ...newCar, price: e.target.value })}
-            className="border rounded p-2"
+            className="border rounded p-2 text-black"
           />
           <button
             onClick={addCar}
