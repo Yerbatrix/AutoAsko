@@ -1,34 +1,46 @@
 "use client";
-import { useState } from "react";
-import { cars as carlist } from "../cars/data";
-
+import { useState, useEffect } from "react";
+import { Car } from "../../types";
 export default function AdminPage() {
-  // Stan z listą samochodów
-  const [cars, setCars] = useState(carlist);
-
-  // Stan dla nowego samochodu
-  const [newCar, setNewCar] = useState({
+  const [cars, setCars] = useState<Car[]>([]);
+  const [newCar, setNewCar] = useState<Partial<Car>>({
     name: "",
     description: "",
     price: "",
+    image: "https://via.placeholder.com/300x200", // Domyślny obrazek
   });
 
-  // Funkcja do dodawania nowego samochodu
-  const addCar = () => {
+  useEffect(() => {
+    const fetchCars = async () => {
+      const res = await fetch("/api/cars");
+      const data = await res.json();
+      setCars(data);
+    };
+
+    fetchCars();
+  }, []);
+
+  const addCar = async () => {
     if (newCar.name && newCar.description && newCar.price) {
-      const newCarData = {
-        id: cars.length + 1,
-        ...newCar,
-        image: "https://via.placeholder.com/300x200",
-      };
-      setCars([...cars, newCarData]);
-      setNewCar({ name: "", description: "", price: "" }); // Czyszczenie formularza
+      const res = await fetch("/api/cars", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCar),
+      });
+
+      if (res.ok) {
+        const createdCar = await res.json();
+        setCars([...cars, createdCar]);
+        setNewCar({ name: "", description: "", price: "", image: "" });
+      }
     }
   };
 
-  // Funkcja do usuwania samochodu
-  const deleteCar = (id: number) => {
-    setCars(cars.filter((car) => car.id !== id));
+  const deleteCar = async (id: number) => {
+    const res = await fetch(`/api/cars/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setCars(cars.filter((car) => car.id !== id));
+    }
   };
 
   return (

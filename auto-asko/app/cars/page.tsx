@@ -1,7 +1,40 @@
+"use client";
+import { Car } from "../../types";
 import Link from "next/link";
-import { cars } from "./data";
+import { useState, useEffect } from "react";
 
 export default function CarsPage() {
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true); // Stan ładowania
+  const [error, setError] = useState(""); // Stan błędu
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const res = await fetch("/api/cars");
+        if (!res.ok) {
+          throw new Error("Błąd w pobieraniu samochodów");
+        }
+        const data = await res.json();
+        setCars(data);
+      } catch (err) {
+        setError(err.message || "Wystąpił błąd");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  if (loading) {
+    return <p>Ładowanie danych samochodów...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
   return (
     <section>
       <h2 className="text-4xl font-bold mb-6">Nasze Samochody</h2>

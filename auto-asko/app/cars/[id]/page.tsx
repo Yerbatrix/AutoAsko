@@ -1,10 +1,12 @@
-import { cars } from "../data";
+import { notFound } from "next/navigation";
 
-export default function CarDetailsPage({ params }: { params: { id: string } }) {
-  const car = cars.find((c) => c.id === parseInt(params.id));
+export default async function CarDetailsPage({ params }: { params: { id: string } }) {
+  // Pobieranie danych samochodu z API
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cars/${params.id}`);
+  const car = await res.json();
 
-  if (!car) {
-    return <h2 className="text-2xl font-bold">Samochód nie znaleziony!</h2>;
+  if (!car || res.status !== 200) {
+    notFound(); // Pokazuje stronę 404 jeśli samochód nie istnieje
   }
 
   return (
@@ -22,4 +24,5 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
       </a>
     </section>
   );
+}
 }
