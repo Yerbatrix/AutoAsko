@@ -1,7 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Car } from "../../types";
+
 export default function AdminPage() {
+  const router = useRouter();
   const [cars, setCars] = useState<Car[]>([]);
   const [newCar, setNewCar] = useState<Partial<Car>>({
     name: "",
@@ -19,6 +22,16 @@ export default function AdminPage() {
 
     fetchCars();
   }, []);
+
+  const handleLogout = async () => {
+    const res = await fetch("/api/logout", { method: "POST" });
+
+    if (res.ok) {
+      router.push("/login"); // Przekierowanie na stronę logowania
+    } else {
+      console.error("Błąd podczas wylogowywania");
+    }
+  };
 
   const addCar = async () => {
     if (newCar.name && newCar.description && newCar.price) {
@@ -39,7 +52,7 @@ export default function AdminPage() {
   const deleteCar = async (id: number) => {
     console.log(`Wysyłam żądanie DELETE do /api/cars/${id}`);
     const res = await fetch(`/api/cars/${id}`, { method: "DELETE" });
-  
+
     if (res.ok) {
       setCars(cars.filter((car) => car.id !== id)); // Usuń samochód lokalnie
     } else {
@@ -50,7 +63,12 @@ export default function AdminPage() {
   return (
     <section className="p-6">
       <h1 className="text-4xl font-bold mb-4">Panel Administratora</h1>
-
+      <button
+        onClick={handleLogout}
+        className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+      >
+        Wyloguj się
+      </button>
       {/* Formularz dodawania samochodów */}
       <div className="mb-6">
         <h2 className="text-2xl font-semibold mb-2">Dodaj nowy samochód</h2>
